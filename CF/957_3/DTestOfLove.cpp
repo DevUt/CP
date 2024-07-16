@@ -19,7 +19,8 @@
 #define leadz(x) __builtin_clz(x) // REMEMBER THE X SHOULD BE UNSIGNED
 #define leadzll(x) __builtin_clzll(x)
 #define oddparity(x) __builtin_parity(x)
-#define findFirstSet(x) __builtin_ffs(x) // index of the least significant bits of x) + 1.
+#define findFirstSet(x)                                                        \
+  __builtin_ffs(x) // index of the least significant bits of x) + 1.
 
 // The namespaces
 using namespace std;
@@ -74,44 +75,36 @@ template <typename T, typename P> T cfloor(const T &a, const P &b) {
 }
 
 void solve(int test_case) {
-  int n; cin>>n;
-  vector<int> v(n); cin>>v;
-  sort(all(v));
-  vector<int> cnt;
-  cnt.push_back(1);
-  for(int i=1,j=0; i<n; i++){
-    if(v[i] != v[i-1]){
-      cnt.push_back(0);
-      j++;
-    }
-    cnt[j]++;
-  }
-
-  const int inf = 1e9;
-  vector<int> dp(n+1,inf);
-  dp[0] = 0;
-  // dp[i][k] = dp[i-1][j]
-  // if s = dp[i-1][k-1] + cnt[i] < i - k then dp[i][k] = ckmin(dp[i][k],s)
-  // Learnt from editorial hopefully can solve it next time on own
-
-  n = cnt.size();
-  for(int i=1; i<=n; i++){
-    vector<int> next_dp = dp;
-    for(int j=1; j<=i; j++){
-      int s = dp[j-1]+cnt[i-1];
-      if(s <= i - j){
-        ckmin(next_dp[j],s);
+  int n, m, k;
+  cin >> n >> m >> k;
+  vector<pair<char, int>> dp(n + 2,{false,INT_MAX});
+  dp[0] = {true, 0};
+  string s;
+  s.push_back('#');
+  string temp;
+  cin >> temp;
+  s.append(temp);
+  s.push_back('#');
+  for (int i = 1; i <= n+1; i++) {
+    for(int j = 1; j<=m && i-j >=0; j++){
+      if(dp[i-j].first && s[i-j] != 'C'){
+        if(j > 1 && (s[i-j] != 'L' && s[i-j] != '#'))
+          continue;
+        int r = dp[i-j].second;
+        if(s[i] == 'W')
+          r++;
+        dp[i] = {true, min(dp[i].second, r)};
       }
     }
-    dp = next_dp;
+    if(s[i] == 'C')
+      dp[i] = {false, dp[i].second};
   }
-  for(int i=n; i>=0; i--){
-    if(dp[i] < inf){
-      cout<<n-i<<'\n';
-      return;
-    }
+  if(dp[n+1].first && dp[n+1].second <= k ){
+    cout<<"YES";
+  }else{
+    cout<<"NO";
   }
-  assert(false);
+  cout<<"\n";
   // cout<<"Case #"<<test_case<<": ";
 }
 

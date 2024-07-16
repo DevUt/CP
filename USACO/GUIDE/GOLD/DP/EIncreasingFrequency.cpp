@@ -19,7 +19,8 @@
 #define leadz(x) __builtin_clz(x) // REMEMBER THE X SHOULD BE UNSIGNED
 #define leadzll(x) __builtin_clzll(x)
 #define oddparity(x) __builtin_parity(x)
-#define findFirstSet(x) __builtin_ffs(x) // index of the least significant bits of x) + 1.
+#define findFirstSet(x)                                                        \
+  __builtin_ffs(x) // index of the least significant bits of x) + 1.
 
 // The namespaces
 using namespace std;
@@ -74,44 +75,43 @@ template <typename T, typename P> T cfloor(const T &a, const P &b) {
 }
 
 void solve(int test_case) {
-  int n; cin>>n;
-  vector<int> v(n); cin>>v;
-  sort(all(v));
-  vector<int> cnt;
-  cnt.push_back(1);
-  for(int i=1,j=0; i<n; i++){
-    if(v[i] != v[i-1]){
-      cnt.push_back(0);
-      j++;
-    }
-    cnt[j]++;
+  int n;
+  cin >> n;
+  int c;
+  cin >> c;
+
+  vector<int> v(n);
+  cin >> v;
+
+  map<int, vector<array<int, 2>>> idx;
+  vector<int> pref(n + 1), suf(n + 1);
+
+  for (int i = 0; i < n; i++)
+    pref[i + 1] = pref[i] + (v[i] == c);
+
+  for (int i = n - 1; i >= 0; i--)
+    suf[i] = suf[i + 1] + (v[i] == c);
+
+  for (int i = 0; i < n; i++) {
+    idx[v[i]].push_back({i, 0});
   }
 
-  const int inf = 1e9;
-  vector<int> dp(n+1,inf);
-  dp[0] = 0;
-  // dp[i][k] = dp[i-1][j]
-  // if s = dp[i-1][k-1] + cnt[i] < i - k then dp[i][k] = ckmin(dp[i][k],s)
-  // Learnt from editorial hopefully can solve it next time on own
+  for (auto &[key, idxList] : idx) {
+    for (int i = idxList.size() - 1; i >= 0; i--) {
+      idxList[i] = {idxList[i][0], (i + 1 < idxList.size()) ? max(suf[idxList[i][0] + 1] + i,
+                                                     idxList[i + 1][1])
+                                               : suf[idxList[i][0] + 1] + i};
+    }
+  }
 
-  n = cnt.size();
-  for(int i=1; i<=n; i++){
-    vector<int> next_dp = dp;
-    for(int j=1; j<=i; j++){
-      int s = dp[j-1]+cnt[i-1];
-      if(s <= i - j){
-        ckmin(next_dp[j],s);
-      }
-    }
-    dp = next_dp;
-  }
-  for(int i=n; i>=0; i--){
-    if(dp[i] < inf){
-      cout<<n-i<<'\n';
-      return;
+  int ans = count(all(v),c);
+  for(auto& [num, idxList] : idx){
+    for(int i=0; auto& [l,y] : idxList){
+      ckmax(ans, pref[l]-i+1+y);
+      i++;
     }
   }
-  assert(false);
+  cout<<ans<<'\n';
   // cout<<"Case #"<<test_case<<": ";
 }
 
@@ -128,7 +128,6 @@ int32_t main() {
 // freopen("problemname.out", "w", stdout);
 #endif
   int test_case = 1;
-  cin >> test_case;
   for (int i = 1; i <= test_case; i++) {
     solve(i);
   }

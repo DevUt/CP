@@ -74,44 +74,15 @@ template <typename T, typename P> T cfloor(const T &a, const P &b) {
 }
 
 void solve(int test_case) {
-  int n; cin>>n;
-  vector<int> v(n); cin>>v;
-  sort(all(v));
-  vector<int> cnt;
-  cnt.push_back(1);
-  for(int i=1,j=0; i<n; i++){
-    if(v[i] != v[i-1]){
-      cnt.push_back(0);
-      j++;
-    }
-    cnt[j]++;
+  array<ll,3> a; cin>>a;
+  sort(all(a));
+  for(int i=0; i<5; i++){
+    sort(all(a));
+    a[0]++;
   }
-
-  const int inf = 1e9;
-  vector<int> dp(n+1,inf);
-  dp[0] = 0;
-  // dp[i][k] = dp[i-1][j]
-  // if s = dp[i-1][k-1] + cnt[i] < i - k then dp[i][k] = ckmin(dp[i][k],s)
-  // Learnt from editorial hopefully can solve it next time on own
-
-  n = cnt.size();
-  for(int i=1; i<=n; i++){
-    vector<int> next_dp = dp;
-    for(int j=1; j<=i; j++){
-      int s = dp[j-1]+cnt[i-1];
-      if(s <= i - j){
-        ckmin(next_dp[j],s);
-      }
-    }
-    dp = next_dp;
-  }
-  for(int i=n; i>=0; i--){
-    if(dp[i] < inf){
-      cout<<n-i<<'\n';
-      return;
-    }
-  }
-  assert(false);
+  ll ans = 0;
+  ans = a[0] * a[1] *a[2];
+  cout<<ans<<'\n';
   // cout<<"Case #"<<test_case<<": ";
 }
 
