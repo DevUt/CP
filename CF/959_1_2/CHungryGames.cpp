@@ -3,7 +3,7 @@
 // Use some pragma optimizations
 #pragma GCC target(                                                            \
     "sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,avx2,tune=native")
-// #pragma GCC optimize("tree-vectorize") // DO NOT USE ON USACO
+#pragma GCC optimize("tree-vectorize") // DO NOT USE ON USACO
 // #pragma GCC optimize("Ofast")
 // #define SLOWIO
 // Shotern long variable names
@@ -74,55 +74,42 @@ template <typename T, typename P> T cfloor(const T &a, const P &b) {
   return n >= 0 ? n / d : -1 - (-1 - n) / d;
 }
 
+#define int ll
 void solve(int test_case) {
-  int n, m, c;
-  cin >> n >> m >> c;
-
-  const int limit = 3e4;
+  int n, x;
+  cin >> n >> x;
   vector<int> v(n);
   cin >> v;
-
-  vector<vector<int>> g(n + 1, vector<int>());
-  vector g_inv = g;
-
-  for (int i = 0; i < m; i++) {
-    int a, b;
-    cin >> a >> b;
-    g[a].push_back(b);
-    g_inv[b].push_back(a);
-  }
-
-  // Currently it doesn't make sure that the path starts at 1
-  // vector<vector<int>> dp(limit+1, vector<int>(n+1));
-  // for(int i=1; i<=limit; i++){
-  //   for(int j=1; j<=n; j++)
-  //     for(auto& x : g_inv[j]){
-  //       if((x != 1 && dp[i-1][x]) || (x == 1))
-  //         ckmax(dp[i][j], v[j-1] + dp[i-1][x]);
-  //     }
-  // }
-  //
-  // ll ans = -1;
-  // for(ll i=0; i<=limit; i++){
-  //   ckmax(ans, dp[i][1] - c*i*i);
-  // }
-
-  ll ans = 0;
-
-  vector<int> dp(n+1);
-
-  for(int i=1; i<=limit; i++){
-    vector new_dp = vector<int>(n+1);
-    for(int j=1; j<=n; j++){
-      for(auto& x : g_inv[j]){
-        if((x != 1 && dp[x]) || (x == 1))
-          ckmax(new_dp[j], v[j-1] + dp[x]);
+  int ans = n * (n + 1) / 2;
+  /* for(int i=0; i<n; i++){
+    int sum = 0;
+    for(int j=i; j<n; j++){
+      sum += v[j];
+      if(sum > x){
+        sum = 0;
+        ans--;
       }
     }
-    ckmax(ans, (ll)new_dp[1] - (ll)c*i*i);
-    dp = new_dp;
   }
-  cout << ans << '\n';
+  cout<<ans<<"\n"; */
+  int cnt = 0;
+  ll sum = 0;
+  map<int, int> track;
+  for (int l = 0, r = 0; r < n; r++) {
+    sum += v[r];
+    while (sum > x && l < n) {
+      sum -= v[l];
+      int tempcnt = 1;
+      if (track.contains(l - 1)) {
+        tempcnt += track[l-1];
+      }
+      track[r] += tempcnt;
+      cnt += tempcnt;
+      l++;
+    }
+  }
+
+  cout << ans - cnt << '\n';
   // cout<<"Case #"<<test_case<<": ";
 }
 
@@ -134,11 +121,12 @@ int32_t main() {
   // DON"T DO THE STRING STREAM STUFF
 
 #ifndef UTKARSH_LOCAL
-  freopen("time.in", "r", stdin);
-  // the following line creates/overwrites the output file
-  freopen("time.out", "w", stdout);
+// freopen("problemname.in", "r", stdin);
+// // the following line creates/overwrites the output file
+// freopen("problemname.out", "w", stdout);
 #endif
   int test_case = 1;
+  cin >> test_case;
   for (int i = 1; i <= test_case; i++) {
     solve(i);
   }

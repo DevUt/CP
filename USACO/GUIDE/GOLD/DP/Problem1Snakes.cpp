@@ -3,7 +3,6 @@
 // Use some pragma optimizations
 #pragma GCC target(                                                            \
     "sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,avx2,tune=native")
-// #pragma GCC optimize("tree-vectorize") // DO NOT USE ON USACO
 // #pragma GCC optimize("Ofast")
 // #define SLOWIO
 // Shotern long variable names
@@ -74,55 +73,32 @@ template <typename T, typename P> T cfloor(const T &a, const P &b) {
   return n >= 0 ? n / d : -1 - (-1 - n) / d;
 }
 
+#define int ll
 void solve(int test_case) {
-  int n, m, c;
-  cin >> n >> m >> c;
-
-  const int limit = 3e4;
+  int n, k;
+  cin >> n >> k;
   vector<int> v(n);
   cin >> v;
+  vector dp(n + 1, vector<int>(k + 1, INT_MAX));
 
-  vector<vector<int>> g(n + 1, vector<int>());
-  vector g_inv = g;
-
-  for (int i = 0; i < m; i++) {
-    int a, b;
-    cin >> a >> b;
-    g[a].push_back(b);
-    g_inv[b].push_back(a);
-  }
-
-  // Currently it doesn't make sure that the path starts at 1
-  // vector<vector<int>> dp(limit+1, vector<int>(n+1));
-  // for(int i=1; i<=limit; i++){
-  //   for(int j=1; j<=n; j++)
-  //     for(auto& x : g_inv[j]){
-  //       if((x != 1 && dp[i-1][x]) || (x == 1))
-  //         ckmax(dp[i][j], v[j-1] + dp[i-1][x]);
-  //     }
-  // }
-  //
-  // ll ans = -1;
-  // for(ll i=0; i<=limit; i++){
-  //   ckmax(ans, dp[i][1] - c*i*i);
-  // }
-
-  ll ans = 0;
-
-  vector<int> dp(n+1);
-
-  for(int i=1; i<=limit; i++){
-    vector new_dp = vector<int>(n+1);
-    for(int j=1; j<=n; j++){
-      for(auto& x : g_inv[j]){
-        if((x != 1 && dp[x]) || (x == 1))
-          ckmax(new_dp[j], v[j-1] + dp[x]);
+  dp[0] = vector<int>(k+1);
+  int g_max = 0;
+  int g_sum = 0;
+  for (int i = 1; i <= n; i++) {
+    int sum = 0;
+    g_sum += v[i-1];
+    int max_val = v[i - 1];
+    ckmax(g_max, v[i - 1]);
+    dp[i][0] = i*g_max - g_sum;
+    for (int j = i; j >= 1; j--) {
+      sum += v[j - 1];
+      ckmax(max_val, v[j - 1]);
+      for (int l = 1; l <= k; l++) {
+        ckmin(dp[i][l], dp[j - 1][l - 1] + max_val * (i-j+ 1LL) - sum);
       }
     }
-    ckmax(ans, (ll)new_dp[1] - (ll)c*i*i);
-    dp = new_dp;
   }
-  cout << ans << '\n';
+  cout << *min_element(all(dp[n]));
   // cout<<"Case #"<<test_case<<": ";
 }
 
@@ -134,9 +110,9 @@ int32_t main() {
   // DON"T DO THE STRING STREAM STUFF
 
 #ifndef UTKARSH_LOCAL
-  freopen("time.in", "r", stdin);
-  // the following line creates/overwrites the output file
-  freopen("time.out", "w", stdout);
+freopen("snakes.in", "r", stdin);
+// the following line creates/overwrites the output file
+freopen("snakes.out", "w", stdout);
 #endif
   int test_case = 1;
   for (int i = 1; i <= test_case; i++) {

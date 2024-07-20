@@ -3,7 +3,7 @@
 // Use some pragma optimizations
 #pragma GCC target(                                                            \
     "sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,avx2,tune=native")
-// #pragma GCC optimize("tree-vectorize") // DO NOT USE ON USACO
+#pragma GCC optimize("tree-vectorize") // DO NOT USE ON USACO
 // #pragma GCC optimize("Ofast")
 // #define SLOWIO
 // Shotern long variable names
@@ -75,54 +75,52 @@ template <typename T, typename P> T cfloor(const T &a, const P &b) {
 }
 
 void solve(int test_case) {
-  int n, m, c;
-  cin >> n >> m >> c;
-
-  const int limit = 3e4;
-  vector<int> v(n);
-  cin >> v;
-
-  vector<vector<int>> g(n + 1, vector<int>());
-  vector g_inv = g;
-
-  for (int i = 0; i < m; i++) {
-    int a, b;
-    cin >> a >> b;
-    g[a].push_back(b);
-    g_inv[b].push_back(a);
-  }
-
-  // Currently it doesn't make sure that the path starts at 1
-  // vector<vector<int>> dp(limit+1, vector<int>(n+1));
-  // for(int i=1; i<=limit; i++){
-  //   for(int j=1; j<=n; j++)
-  //     for(auto& x : g_inv[j]){
-  //       if((x != 1 && dp[i-1][x]) || (x == 1))
-  //         ckmax(dp[i][j], v[j-1] + dp[i-1][x]);
-  //     }
-  // }
-  //
-  // ll ans = -1;
-  // for(ll i=0; i<=limit; i++){
-  //   ckmax(ans, dp[i][1] - c*i*i);
-  // }
-
-  ll ans = 0;
-
-  vector<int> dp(n+1);
-
-  for(int i=1; i<=limit; i++){
-    vector new_dp = vector<int>(n+1);
-    for(int j=1; j<=n; j++){
-      for(auto& x : g_inv[j]){
-        if((x != 1 && dp[x]) || (x == 1))
-          ckmax(new_dp[j], v[j-1] + dp[x]);
-      }
+  int n, m;
+  cin >> n >> m;
+  int v[n][m];
+  for(int i=0; i<n; i++){
+    for(int j=0; j<m; j++){
+      cin>>v[i][j];
     }
-    ckmax(ans, (ll)new_dp[1] - (ll)c*i*i);
-    dp = new_dp;
   }
-  cout << ans << '\n';
+
+  if(n ==  1 && m == 1){
+    cout<<-1<<'\n';
+    return;
+  }
+
+  // int l = 1, r = n*m;
+  // for(int i=0; i<n; i++){
+  //   for(int j=0; j<m; j++){
+  //     if(l == v[i][j]){
+  //       ans[i][j] = (r--);
+  //     }else{
+  //       ans[i][j] = l++;
+  //     }
+  //   }
+  // }
+  // for(auto& x : ans){
+  //   cout<<x<<"\n";
+  // }
+
+  for(int i=1; i<n*m; i+=2){
+    int temp = *(v[0] + i);
+    *(v[0] + i) = *(v[0] + i - 1);
+    *(v[0] + i - 1) = temp;
+  }
+  if(n*m%2 == 1){
+    int i  = n*m - 1;
+    int temp = *(v[0] + i);
+    *(v[0] + i) = *(v[0] + i - 1);
+    *(v[0] + i - 1) = temp;
+
+  }
+  for(int i=0; i<n; i++){
+    for(int j=0; j<m; j++){
+      cout<<v[i][j]<<' ';
+    }
+  }
+  cout<<'\n';
   // cout<<"Case #"<<test_case<<": ";
 }
 
@@ -134,11 +132,12 @@ int32_t main() {
   // DON"T DO THE STRING STREAM STUFF
 
 #ifndef UTKARSH_LOCAL
-  freopen("time.in", "r", stdin);
-  // the following line creates/overwrites the output file
-  freopen("time.out", "w", stdout);
+// freopen("problemname.in", "r", stdin);
+// // the following line creates/overwrites the output file
+// freopen("problemname.out", "w", stdout);
 #endif
   int test_case = 1;
+  cin >> test_case;
   for (int i = 1; i <= test_case; i++) {
     solve(i);
   }
