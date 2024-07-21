@@ -19,7 +19,8 @@ using ldb = long double;
 #define leadz(x) __builtin_clz(x) // REMEMBER THE X SHOULD BE UNSIGNED
 #define leadzll(x) __builtin_clzll(x)
 #define oddparity(x) __builtin_parity(x)
-#define findFirstSet(x) __builtin_ffs(x) // index of the least significant bits of x) + 1.
+#define findFirstSet(x)                                                        \
+  __builtin_ffs(x) // index of the least significant bits of x) + 1.
 
 // The namespaces
 using namespace std;
@@ -73,44 +74,73 @@ template <typename T, typename P> T cfloor(const T &a, const P &b) {
   return n >= 0 ? n / d : -1 - (-1 - n) / d;
 }
 
-void solve(int test_case) {
+// STDIN : INPUT argv : my answer
+ifstream fin;
+int solve(int test_case) {
   int n; cin>>n;
   int x,y; cin>>x>>y;
-
   vector<int> v(n);
+  fin>>v;
 
-  bool sw = false;
+  int max_suf = INT_MIN;
+  int calc_y;
 
-  for(int i=y-1; i<x; i++)
-    v[i] = 1;
-  for(int i=y-2; i>=0; i--){
-    v[i] = (sw ? 1 : -1);
-    sw = !sw;
+  int curr_sum = 0;
+  for (int i = n - 1; auto &x : ranges::views::reverse(v)) {
+    curr_sum += x;
+    if(curr_sum >  max_suf){
+      max_suf = curr_sum;
+      calc_y = i;
+    }
+    i--;
   }
-  sw = false;
-  for(int i=x; i<n; i++){
-    v[i] = (sw ? 1 : -1);
-    sw = !sw;
+
+  int max_pref = INT_MIN;
+  int calc_x;
+  curr_sum = 0;
+  for(int i=0; auto &x : v){
+    curr_sum += x;
+    if(curr_sum > max_pref){
+      max_pref = curr_sum;
+      calc_x = i;
+    }
+    i++;
   }
-  cout<<v<<'\n';
+
+  if((calc_x+1) != x || (calc_y+1) != y){
+    cout<<"Failed test\n";
+    cout<<n<<'\n'<<x<<" "<<y<<"\n";
+    cout<<v<<'\n';
+    cout<<"Calculated x "<<calc_x+1 <<"With sum"<<'\n';
+    cout<<"Calculated y "<<calc_y+1<<'\n';
+    return 1;
+  }
+  return 0;
   // cout<<"Case #"<<test_case<<": ";
 }
 
-signed main() {
+signed main(int argc, char *argv[]) {
 #ifndef SLOWIO
   ios_base::sync_with_stdio(false);
   cin.tie(NULL);
 #endif
   // DON"T DO THE STRING STREAM STUFF
+  if (argc < 2) {
+    cout<<"No cmdline arg passed\n";
+    return 1;
+  }
 
+  fin = ifstream(argv[1], ifstream::in);
 #ifndef UTKARSH_LOCAL
 // freopen("problemname.in", "r", stdin);
 // // the following line creates/overwrites the output file
 // freopen("problemname.out", "w", stdout);
 #endif
   int test_case = 1;
-  cin >> test_case;
+  cin>>test_case;
   for (int i = 1; i <= test_case; i++) {
-    solve(i);
+    int ret = solve(i);
+    if(ret)
+      return 1;  
   }
 }
