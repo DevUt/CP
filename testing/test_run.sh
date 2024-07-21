@@ -12,8 +12,10 @@ checker_bool=false
 only_checker_bool=false
 
 usage() { 
-	echo "$0 -g generator -y your_code -b brute_code -c checker[optional] -x"
-        echo "-x Only checker, no brute force"
+	echo -e "$0 -g generator -y your_code -b brute_code -c checker[optional] -x \n";
+        echo -e "-x Only checker, no brute force\n";
+        echo -e "\t When writing checker stdin gives input_file and\n";
+        echo -e "\t argv gives the file name of answer output\n"
 	exit ; 
 }
 
