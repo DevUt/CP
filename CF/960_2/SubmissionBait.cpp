@@ -74,6 +74,20 @@ template <typename T, typename P> T cfloor(const T &a, const P &b) {
 }
 
 void solve(int test_case) {
+  int n; cin>>n;
+  vector v(n,0); cin>>v;
+
+  map<int,int> cnt;
+
+  for(auto& x : v)
+    cnt[x]++;
+  for(auto& [_, x] : views::reverse(cnt)){
+    if(x%2 == 1){
+      cout<<"YES\n";
+      return;
+    }
+  }
+  cout<<"NO\n";
   // cout<<"Case #"<<test_case<<": ";
 }
 

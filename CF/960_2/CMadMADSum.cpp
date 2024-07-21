@@ -19,7 +19,8 @@ using ldb = long double;
 #define leadz(x) __builtin_clz(x) // REMEMBER THE X SHOULD BE UNSIGNED
 #define leadzll(x) __builtin_clzll(x)
 #define oddparity(x) __builtin_parity(x)
-#define findFirstSet(x) __builtin_ffs(x) // index of the least significant bits of x) + 1.
+#define findFirstSet(x)                                                        \
+  __builtin_ffs(x) // index of the least significant bits of x) + 1.
 
 // The namespaces
 using namespace std;
@@ -73,7 +74,34 @@ template <typename T, typename P> T cfloor(const T &a, const P &b) {
   return n >= 0 ? n / d : -1 - (-1 - n) / d;
 }
 
+#define int ll
 void solve(int test_case) {
+  int n;
+  cin >> n;
+  vector<int> v(n);
+  cin >> v;
+  map<int, bool> oc;
+  oc[0] = true;
+  vector<char> seen(n+1);
+  vector<int> res(n);
+  for (int i = 0; i < n; i++) {
+    if(seen[v[i]]){
+      oc[v[i]] = true;
+    }
+    if(!seen[v[i]]){
+      seen[v[i]] = true;
+    }
+    res[i] = oc.rbegin()->first;
+  }
+
+  ll sum = accumulate(all(v), 0ll);
+  int last_mad = 0;
+  for (ll i = 1; i < n; i++) {
+    if(res[i] == res[i-1])
+      last_mad = res[i];
+    sum += res[i] + last_mad*(n-i);
+  }
+  cout << sum << '\n';
   // cout<<"Case #"<<test_case<<": ";
 }
 

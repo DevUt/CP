@@ -74,6 +74,48 @@ template <typename T, typename P> T cfloor(const T &a, const P &b) {
 }
 
 void solve(int test_case) {
+  int n,x; cin>>n>>x;
+  vector<map<int,bool>> dp(n+1);
+  vector<int> v(n); cin>>v;
+  vector<int> fac;
+
+  for(int i=1; i*i<= x+1; i++){
+    if(x%i == 0){
+      fac.push_back(i);
+      fac.push_back(x/i);
+    }
+  }
+
+  fac.push_back(x);
+  sort(all(fac));
+
+  uniq(fac);
+  int l=0;
+  bool start = false;
+  int cnt = 1;
+  for(int i=0; i<n; i++){
+    if(start){
+      cnt++;
+      start = false;
+    }
+    for(auto f : fac){
+      if(i == l){
+        dp[i][f] = (f == v[l]);
+      }else{
+        dp[i][f] = dp[i-1][f] || (f == v[i]);
+        if(f%v[i] == 0){
+          dp[i][f] = dp[i][f] || dp[i-1][f/v[i]];
+        }
+      }
+    }
+    if(dp[i][x] == true){
+      l = i;
+      start = true;
+      dp[i].clear();
+      i--;
+    }
+  }
+  cout<<cnt<<'\n';
   // cout<<"Case #"<<test_case<<": ";
 }
 

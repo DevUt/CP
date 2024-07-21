@@ -74,6 +74,22 @@ template <typename T, typename P> T cfloor(const T &a, const P &b) {
 }
 
 void solve(int test_case) {
+  int n; cin>>n;
+  int x,y; cin>>x>>y;
+
+  vector<int> v(n+1);
+  for(int i=1; i<=n; i++){
+    if(i < y){
+      v[i] = -1;
+    }else if(i>=y && i<= x){
+      v[i] = 1;
+    }else{
+      v[i] = -1;
+    }
+  }
+  for(int i=1; i<=n; i++)
+    cout<<v[i]<<" ";
+  cout<<'\n';
   // cout<<"Case #"<<test_case<<": ";
 }
 
