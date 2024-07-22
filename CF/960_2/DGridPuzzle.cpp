@@ -74,50 +74,39 @@ template <typename T, typename P> T cfloor(const T &a, const P &b) {
 }
 
 void solve(int test_case) {
-  int n,x; cin>>n>>x;
-  map<int,bool> new_dp;
-  map<int,bool> old_dp;
+  int n; cin>>n;
   vector<int> v(n); cin>>v;
-  vector<int> fac;
 
-  for(int i=1; i*i<= x+1; i++){
-    if(x%i == 0){
-      fac.push_back(i);
-      fac.push_back(x/i);
+  auto tt_pat = [&v](int idx) -> bool{
+    if(idx-1 >= 0){
+      bool cond = v[idx] <= 2 && v[idx-1] <= 2;
+      bool cond1 = v[idx] >0 && v[idx-1] >0;
+      return cond && cond1;
     }
-  }
+    return false;
+  };
 
-  fac.push_back(x);
-  sort(all(fac));
-
-  uniq(fac);
-  int l=0;
-  bool start = false;
-  int cnt = 1;
+  auto tfft = [&v](int idx)->bool {
+    if(idx-3 >= 0){
+      bool cond = (v[idx] <= 2 ) && (v[idx-1] <= 4) && (v[idx-2] <= 4) && (v[idx-3] <= 2);
+      bool cond1 = (v[idx] >0 ) && (v[idx-1] >0) && (v[idx-2] >0) && (v[idx-3] >0);
+      return cond && cond1;
+    }
+    return false;
+  };
+  int ans = n-count(all(v),0);
   for(int i=0; i<n; i++){
-    if(start){
-      cnt++;
-      start = false;
+    if(tt_pat(i)){
+      if(!tfft(i-1) && !tt_pat(i-1))
+        ans--;
     }
-    for(auto f : fac){
-      if(i == l){
-        new_dp[f] = (f == v[l]);
-      }else{
-        new_dp[f]  = old_dp[f] || (f == v[i]);
-        if(f%v[i] == 0){
-          new_dp[f] = new_dp[f] || old_dp[f/v[i]];
-        }
-      }
+
+    if(tfft(i)){
+      if(!tt_pat(i-3) && !tt_pat(i-2) & !tt_pat(i-1) && !tt_pat(i))
+        ans--;
     }
-    if(new_dp[x] == true){
-      l = i;
-      start = true;
-      i--;
-    }
-    old_dp = new_dp;
-    new_dp = map<int,bool>();
   }
-  cout<<cnt<<'\n';
+  cout<<ans<<"\n";
   // cout<<"Case #"<<test_case<<": ";
 }
 
